@@ -1,9 +1,21 @@
 <h1>Manage products</h1>
 
-<app-file-picker
-  [(file)]="selectedFile"
-  (uploadClick)="onUploadCSV()"
-></app-file-picker>
+<div class="d-flex">
+  <app-file-picker
+    class="mr-2"
+    [(file)]="selectedFile"
+    (uploadClick)="onUploadCSV()"
+  ></app-file-picker>
+
+  <button
+    class="text-uppercase"
+    color="primary"
+    mat-flat-button
+    routerLink="new"
+  >
+    create product
+  </button>
+</div>
 
 <table class="w-100" [dataSource]="products$" mat-table>
   <ng-container matColumnDef="from">

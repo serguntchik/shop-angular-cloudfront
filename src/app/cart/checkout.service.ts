@@ -21,8 +21,8 @@ export class CheckoutService {
           map((products) =>
             products.map((product) => ({
               ...product,
-              orderedCount: cart[product.id],
-              totalPrice: +(cart[product.id] * product.price).toFixed(2),
+              orderedCount: cart[product.id!],
+              totalPrice: +(cart[product.id!] * product.price).toFixed(2),
             }))
           )
         )
