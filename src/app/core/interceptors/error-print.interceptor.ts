@@ -1,32 +1,29 @@
 import { Injectable } from '@angular/core';
 import {
+  HttpErrorResponse,
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
+
 import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
 import { NotificationService } from '../notification.service';
-import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class ErrorPrintInterceptor implements HttpInterceptor {
   constructor(private readonly notificationService: NotificationService) {}
 
   intercept(
-    request: HttpRequest<unknown>,
+    request: HttpRequest<any>,
     next: HttpHandler
-  ): Observable<HttpEvent<unknown>> {
+  ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
-      tap({
-        error: () => {
-          const url = new URL(request.url);
-
-          this.notificationService.showError(
-            `Request to "${url.pathname}" failed. Check the console for the details`,
-            0
-          );
-        },
+      catchError((error: HttpErrorResponse) => {
+        this.notificationService.showError(error.error.message, 0);
+        throw error;
       })
     );
   }

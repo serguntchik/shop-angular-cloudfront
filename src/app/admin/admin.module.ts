@@ -11,7 +11,6 @@ import { OrdersComponent } from './orders/orders.component';
 import { OrdersService } from './orders/orders.service';
 import { ManageProductsComponent } from './manage-products/manage-products.component';
 import { FilePickerModule } from '../shared/file-picker/file-picker.module';
-import { ManageProductsService } from './manage-products/manage-products.service';
 import { EditProductComponent } from './edit-product/edit-product.component';
 
 @NgModule({
@@ -30,6 +29,6 @@ import { EditProductComponent } from './edit-product/edit-product.component';
     MatButtonModule,
     ReactiveFormsModule,
   ],
-  providers: [OrdersService, ManageProductsService],
+  providers: [OrdersService],
 })
 export class AdminModule {}

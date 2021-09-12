@@ -36,6 +36,7 @@
           }
         ],
         "@typescript-eslint/no-non-null-assertion": [0],
+        "rxjs/no-implicit-any-catch": [0],
         "rxjs/no-subject-value": [0]
       }
     },
