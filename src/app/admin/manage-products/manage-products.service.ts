@@ -1,14 +1,15 @@
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
+
 import { EMPTY, Observable } from 'rxjs';
-import { ApiService } from '../../core/api.service';
 import { map, switchMap } from 'rxjs/operators';
 
-@Injectable()
-export class ManageProductsService extends ApiService {
-  constructor(injector: Injector) {
-    super(injector);
-  }
+import { ApiService } from '../../core/api.service';
 
+@Injectable({
+  providedIn: 'root',
+})
+export class ManageProductsService extends ApiService {
   uploadProductsCSV(file: File): Observable<unknown> {
     if (!this.endpointEnabled('import')) {
       console.warn(
@@ -30,10 +31,17 @@ export class ManageProductsService extends ApiService {
   }
 
   private getPreSignedUrl(fileName: string): Observable<string> {
+    const authorizationToken = localStorage.getItem('authorizationToken');
     const url = this.getUrl('import', 'import');
+    let headers = new HttpHeaders();
+
+    if (authorizationToken) {
+      headers = headers.set('Authorization', `Basic ${authorizationToken}`);
+    }
 
     return this.http
       .get<{ signedUrl: string }>(url, {
+        headers,
         params: {
           name: fileName,
         },

@@ -1,7 +1,11 @@
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+
 import { Observable, of } from 'rxjs';
-import { Product } from './product.interface';
 import { map } from 'rxjs/operators';
+
+import { Product } from './product.interface';
+
 import { ApiService } from '../core/api.service';
 
 @Injectable({
@@ -48,9 +52,18 @@ export class ProductsService extends ApiService {
       return this.http.get<Product[]>('/assets/products.json');
     }
 
+    const idToken = new URLSearchParams(
+      this.activatedRoute.snapshot.fragment!
+    ).get('id_token');
     const url = this.getUrl('products', 'products');
+    let headers = new HttpHeaders();
+
+    if (idToken) {
+      headers = headers.set('Authorization', idToken);
+    }
+
     return this.http
-      .get<{ products: Product[] }>(url)
+      .get<{ products: Product[] }>(url, { headers })
       .pipe(map((resp) => resp.products));
   }
 
