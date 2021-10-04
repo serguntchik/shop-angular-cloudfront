@@ -13,20 +13,20 @@ import { ApiService } from '../core/api.service';
 })
 export class ProductsService extends ApiService {
   createNewProduct(product: Product): Observable<Product> {
-    if (!this.endpointEnabled('products')) {
+    if (!this.endpointEnabled('bff')) {
       throw new Error(
-        'Endpoint "products" is disabled. To enable change your environment.ts config'
+        'Endpoint "bff" is disabled. To enable change your environment.ts config'
       );
     }
 
-    const url = this.getUrl('products', 'products');
+    const url = this.getUrl('bff', 'products');
     return this.http.post<Product>(url, product);
   }
 
   getProductById(productId: string): Observable<Product | null> {
-    if (!this.endpointEnabled('products')) {
+    if (!this.endpointEnabled('bff')) {
       console.warn(
-        'Endpoint "products" is disabled. To enable change your environment.ts config'
+        'Endpoint "bff" is disabled. To enable change your environment.ts config'
       );
       return this.http
         .get<Product[]>('/assets/products.json')
@@ -38,16 +38,16 @@ export class ProductsService extends ApiService {
         );
     }
 
-    const url = this.getUrl('products', 'products', productId);
+    const url = this.getUrl('bff', 'products', productId);
     return this.http
       .get<{ product: Product }>(url)
       .pipe(map((resp) => resp.product));
   }
 
   getProducts(): Observable<Product[]> {
-    if (!this.endpointEnabled('products')) {
+    if (!this.endpointEnabled('bff')) {
       console.warn(
-        'Endpoint "products" is disabled. To enable change your environment.ts config'
+        'Endpoint "bff" is disabled. To enable change your environment.ts config'
       );
       return this.http.get<Product[]>('/assets/products.json');
     }
@@ -55,7 +55,7 @@ export class ProductsService extends ApiService {
     const idToken = new URLSearchParams(
       this.activatedRoute.snapshot.fragment!
     ).get('id_token');
-    const url = this.getUrl('products', 'products');
+    const url = this.getUrl('bff', 'products');
     let headers = new HttpHeaders();
 
     if (idToken) {
