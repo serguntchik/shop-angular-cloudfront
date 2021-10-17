@@ -55,7 +55,7 @@
       class="text-uppercase"
       color="primary"
       mat-flat-button
-      [disabled]="form.invalid || requestInProgress || !!product"
+      [disabled]="form.invalid || requestInProgress"
       (click)="editProduct()"
     >
       save product

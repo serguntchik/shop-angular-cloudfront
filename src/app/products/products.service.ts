@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Product } from './product.interface';
@@ -14,13 +14,44 @@ import { ApiService } from '../core/api.service';
 export class ProductsService extends ApiService {
   createNewProduct(product: Product): Observable<Product> {
     if (!this.endpointEnabled('bff')) {
-      throw new Error(
-        'Endpoint "bff" is disabled. To enable change your environment.ts config'
-      );
+      return throwError({
+        error: {
+          message:
+            'Endpoint "bff" is disabled. To enable change your environment.ts config',
+        },
+      });
     }
 
     const url = this.getUrl('bff', 'products');
     return this.http.post<Product>(url, product);
+  }
+
+  deleteProduct(productId: string): Observable<any> {
+    if (!this.endpointEnabled('bff')) {
+      return throwError({
+        error: {
+          message:
+            'Endpoint "bff" is disabled. To enable change your environment.ts config',
+        },
+      });
+    }
+
+    const url = this.getUrl('bff', 'products', productId);
+    return this.http.delete(url);
+  }
+
+  editProduct(id: string, changedProduct: Product): Observable<Product> {
+    if (!this.endpointEnabled('bff')) {
+      return throwError({
+        error: {
+          message:
+            'Endpoint "bff" is disabled. To enable change your environment.ts config',
+        },
+      });
+    }
+
+    const url = this.getUrl('bff', 'products', id);
+    return this.http.put<Product>(url, changedProduct);
   }
 
   getProductById(productId: string): Observable<Product | null> {
