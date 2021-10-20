@@ -32,14 +32,14 @@ export class CartService extends ApiService {
   ) {
     super(activatedRoute, injector);
 
-    if (!this.endpointEnabled('cart')) {
+    if (!this.endpointEnabled('bff')) {
       console.warn(
-        'Endpoint "cart" is disabled. To enable change your environment.ts config'
+        'Endpoint "bff" is disabled. To enable change your environment.ts config'
       );
       return;
     }
 
-    const url = this.getUrl('cart', 'profile', 'cart');
+    const url = this.getUrl('bff', 'cart');
     this.http
       .get<{ data: { cart: Cart } }>(url)
       .subscribe(({ data: { cart } }) => this.#cartSource.next(cart));
@@ -68,16 +68,16 @@ export class CartService extends ApiService {
       cartItem.count += type;
     }
 
-    if (!this.endpointEnabled('cart')) {
+    if (!this.endpointEnabled('bff')) {
       console.warn(
-        'Endpoint "cart" is disabled. To enable change your environment.ts config'
+        'Endpoint "bff" is disabled. To enable change your environment.ts config'
       );
       this.#cartSource.next({ id, items });
       return;
     }
 
-    const body = { id, items };
-    const url = this.getUrl('cart', 'profile', 'cart');
+    const body = { id, items: items.filter((item) => item.count > 0) };
+    const url = this.getUrl('bff', 'cart');
     this.http
       .put<{ data: { cart: Cart } }>(url, body)
       .subscribe(({ data: { cart } }) => this.#cartSource.next(cart));

@@ -1,7 +1,12 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+
+import { Subject } from 'rxjs';
+
+import { NotificationService } from '../../core/notification.service';
 import { Product } from '../../products/product.interface';
 import { ProductsService } from '../../products/products.service';
+
 import { ManageProductsService } from './manage-products.service';
 
 @Component({
@@ -14,16 +19,31 @@ export class ManageProductsComponent implements OnInit {
 
   selectedFile: File | null = null;
 
-  products$!: Observable<Product[]>;
+  products$: Subject<Product[]> = new Subject();
 
   constructor(
-    private readonly productsService: ProductsService,
+    private readonly cdr: ChangeDetectorRef,
     private readonly manageProductsService: ManageProductsService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly notificationService: NotificationService,
+    private readonly productsService: ProductsService
   ) {}
 
   ngOnInit(): void {
-    this.products$ = this.productsService.getProducts();
+    this.getProductsList();
+  }
+
+  deleteProduct(productId: string): void {
+    this.productsService.deleteProduct(productId).subscribe(
+      () => this.getProductsList(),
+      (error: HttpErrorResponse) =>
+        this.notificationService.showError(error.error.message)
+    );
+  }
+
+  getProductsList(): void {
+    this.productsService
+      .getProducts()
+      .subscribe((products) => this.products$.next(products));
   }
 
   onUploadCSV(): void {

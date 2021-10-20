@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -10,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 
+import { NotificationService } from '../../core/notification.service';
 import { Product } from '../../products/product.interface';
 import { ProductsService } from '../../products/products.service';
 
@@ -30,6 +32,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
   constructor(
     private readonly activatedRoute: ActivatedRoute,
     private readonly fb: FormBuilder,
+    private readonly notificationService: NotificationService,
     private readonly productsService: ProductsService,
     private readonly router: Router
   ) {}
@@ -57,15 +60,18 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   editProduct(): void {
     const product: Product = this.form$.value!.value;
-    this.requestInProgress = true;
+    const editProduct$ = this.product
+      ? this.productsService.editProduct(this.product!.id!, product)
+      : this.productsService.createNewProduct(product);
 
-    if (!this.product) {
-      this.productsService.createNewProduct(product).subscribe(
-        () =>
-          this.router.navigate(['../'], { relativeTo: this.activatedRoute }),
-        () => (this.requestInProgress = false)
-      );
-    }
+    this.requestInProgress = true;
+    editProduct$.subscribe(
+      () => this.router.navigate(['../'], { relativeTo: this.activatedRoute }),
+      (error: HttpErrorResponse) => {
+        this.requestInProgress = false;
+        this.notificationService.showError(error.error.message);
+      }
+    );
   }
 
   private buildForm(): void {
